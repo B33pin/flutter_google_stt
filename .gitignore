@@ -1,0 +1,169 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+# Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
+/pubspec.lock
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+
+# Android related
+.gradle/
+/android/local.properties
+/android/.gradle/
+/android/captures/
+/android/gradlew
+/android/gradlew.bat
+/android/key.properties
+*.jks
+*.keystore
+
+# iOS related
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/DerivedData/
+**/ios/**/*.hmap
+**/ios/**/*.ipa
+
+# macOS
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Windows
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+
+# Web
+**/web/flutter_service_worker.js
+
+# Coverage
+coverage/
+
+# Symbols
+app.*.symbols
+
+# Exceptions to above rules.
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+
+# Plugin specific
+.metadata
+*.iml
+*.ipr
+*.iws
+
+# IDE files
+.project
+.classpath
+.settings/
+.loadpath
+.externalToolBuilders/
+*.launch
+
+# Backup files
+*~
+*.backup
+*.bak
+*.orig
+
+# Temporary files
+*.tmp
+*.temp
+
+# API Keys and sensitive files (important for this project)
+**/lib/**/api_keys.dart
+**/lib/**/secrets.dart
+**/.env
+**/.env.local
+**/.env.*.local
+token_env/
+generate_token.py
+generate_token_gcloud.sh
+service-account-key.json
+google-credentials.json
+
+# Test related
+**/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+**/android/app/src/debug/
+**/android/app/src/profile/
+
+# Test files with old package structure
+**/android/src/test/kotlin/com/example/
+
+# Gradle wrapper (usually not committed for libraries)
+**/android/gradlew
+**/android/gradlew.bat
+**/android/gradle/wrapper/gradle-wrapper.jar
+
+# Podfile.lock (for Flutter plugins, this can be ignored)
+**/ios/Podfile.lock
+
+# Generated files
+**/ios/Flutter/flutter_export_environment.sh
+**/android/local.properties
+
+# Build artifacts
+**/build/
+**/.gradle/
+
+# IDE workspace files
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+**/.idea/libraries/
+**/.idea/modules.xml
+**/.idea/.name
+**/.idea/compiler.xml
+**/.idea/copyright/
+**/.idea/encodings.xml
+**/.idea/misc.xml
+**/.idea/scopes/
+
+# OS generated files
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+
+# Crashlytics
+**/ios/crashlytics-build.properties
+**/ios/Crashlytics.framework/
+
+# Firebase
+**/ios/Firebase/
+**/android/app/google-services.json
+**/ios/Runner/GoogleService-Info.plist
