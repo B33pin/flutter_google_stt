@@ -19,7 +19,7 @@ Add this plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_google_stt: ^0.0.1
+  flutter_google_stt: ^1.0.0
   # Or use the latest version from pub.dev
 ```
 
