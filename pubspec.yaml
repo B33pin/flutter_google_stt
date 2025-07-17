@@ -9,8 +9,8 @@ topics:
   - speech-to-text
   - speech-recognition
   - google-cloud
-  - voice
-  - audio
+  - grpc
+  - streaming
 
 environment:
   sdk: ^3.8.1
