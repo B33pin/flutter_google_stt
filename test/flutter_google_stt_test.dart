@@ -6,7 +6,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockFlutterGoogleSttPlatform
     with MockPlatformInterfaceMixin
     implements FlutterGoogleSttPlatform {
-
   @override
   Future<bool> initialize({
     required String accessToken,
@@ -40,7 +39,10 @@ void main() {
     });
 
     test('initialize', () async {
-      expect(await FlutterGoogleStt.initialize(accessToken: 'test-token'), true);
+      expect(
+        await FlutterGoogleStt.initialize(accessToken: 'test-token'),
+        true,
+      );
     });
 
     test('microphone permission check', () async {

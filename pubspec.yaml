@@ -1,6 +1,6 @@
 name: flutter_google_stt
-description: "A Flutter plugin for real-time speech-to-text using Google Cloud Speech-to-Text API via REST API."
-version: 1.0.0
+description: "A Flutter plugin for real-time speech-to-text using Google Cloud Speech-to-Text API via gRPC streaming."
+version: 2.0.0
 homepage: https://github.com/guptan404/flutter_google_stt
 repository: https://github.com/guptan404/flutter_google_stt
 issue_tracker: https://github.com/guptan404/flutter_google_stt/issues
@@ -9,8 +9,8 @@ topics:
   - speech-to-text
   - speech-recognition
   - google-cloud
-  - voice
-  - audio
+  - grpc
+  - streaming
 
 environment:
   sdk: ^3.8.1
@@ -19,12 +19,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
+  plugin_platform_interface: ^2.1.8
+  grpc: ^4.1.0
+  protobuf: ^4.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  build_runner: ^2.4.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
