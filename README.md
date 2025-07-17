@@ -1,17 +1,27 @@
 # Flutter Google Speech-to-Text Plugin
 
-A Flutter plugin for real-time speech-to-text using Google Cloud Speech-to-Text API via REST API. This plugin supports both Android (Kotlin) and iOS (Swift) platforms with native audio recording capabilities.
+A Flutter plugin for real-time speech-to-text using Google Cloud Speech-to-Text API with native gRPC streaming. This plugin supports both Android (Kotlin) and iOS (Swift) platforms with native audio recording and continuous transcription capabilities.
 
-## Features
+## ✨ Key Features
 
-- ✅ Real-time speech recognition
-- ✅ Cross-platform support (Android & iOS)
-- ✅ Google Cloud Speech-to-Text API integration via REST
-- ✅ Microphone permission handling
-- ✅ Audio capture and processing
-- ✅ Configurable language and audio settings
-- ✅ Secure API key-based authentication
-- ✅ Clean, production-ready codebase
+- 🚀 **Native gRPC Streaming**: Direct protobuf-based communication with Google Cloud Speech-to-Text
+- 📱 **Cross-platform Support**: Native Android (Kotlin) & iOS (Swift) implementations  
+- 🎤 **Continuous Audio Processing**: Real-time bidirectional streaming
+- ⚡ **Ultra-Low Latency**: Optimal performance with direct gRPC protocol
+- 🧠 **Enhanced AI Models**: Uses Google's `latest_long` model with improved accuracy
+- 🔒 **Secure Authentication**: Google Cloud access token-based authentication
+- 📝 **Automatic Punctuation**: Enhanced readability with smart punctuation
+- 🎯 **Production Ready**: Clean, optimized codebase for production deployment
+
+## 🆕 v2.0.0 - gRPC Architecture
+
+This version introduces a major architectural improvement with **native gRPC streaming** replacing the previous WebSocket implementation:
+
+- **Direct Protocol Communication**: Native protobuf messages for optimal performance
+- **Bidirectional Streaming**: Real-time audio streaming with immediate results
+- **Improved Efficiency**: Eliminated intermediate WebSocket layer
+- **Better Error Handling**: Enhanced connection management and error reporting
+- **Production Optimized**: Removed debug logging and unnecessary dependencies
 
 ## Installation
 
@@ -19,7 +29,7 @@ Add this plugin to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_google_stt: ^1.0.0
+  flutter_google_stt: ^2.0.0
   # Or use the latest version from pub.dev
 ```
 
@@ -27,9 +37,9 @@ Run `flutter pub get` to install the package.
 
 ## Quick Start
 
-1. **Get a Google Cloud API Key** (see Google Cloud Setup section below)
+1. **Get a Google Cloud Access Token** (see Google Cloud Setup section below)
 2. **Add the plugin** to your pubspec.yaml
-3. **Initialize the plugin** with your API key
+3. **Initialize the plugin** with your access token
 4. **Start listening** for speech input
 
 ```dart
@@ -37,7 +47,7 @@ import 'package:flutter_google_stt/flutter_google_stt.dart';
 
 // Initialize
 await FlutterGoogleStt.initialize(
-  accessToken: 'your-google-cloud-api-key',
+  accessToken: 'your-google-cloud-access-token',
   languageCode: 'en-US',
 );
 

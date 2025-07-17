@@ -6,7 +6,6 @@
 // For more information about Flutter integration tests, please see
 // https://flutter.dev/to/integration-testing
 
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -25,7 +24,9 @@ void main() {
   testWidgets('initialization test', (WidgetTester tester) async {
     // Test plugin initialization (will fail with invalid token, but should not crash)
     try {
-      final bool result = await FlutterGoogleStt.initialize(accessToken: 'test-token');
+      final bool result = await FlutterGoogleStt.initialize(
+        accessToken: 'test-token',
+      );
       // Should return a boolean value
       expect(result, isA<bool>());
     } catch (e) {

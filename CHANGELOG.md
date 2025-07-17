@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-07-18
+
+### Major Architecture Change: gRPC Streaming Implementation
+- **BREAKING CHANGE**: Replaced Rest API streaming with native gRPC streaming API
+- Implemented Google Cloud Speech-to-Text gRPC streaming API for optimal performance
+- Added custom protobuf message definitions for direct Google Cloud API communication
+- Real-time bidirectional streaming with immediate results
+- Eliminated intermediate WebSocket layer for improved efficiency
+
+### Enhanced Features
+- **Native gRPC Communication**: Direct protobuf-based communication with Google Cloud Speech-to-Text
+- **Improved Performance**: Reduced latency and improved throughput with native gRPC protocol
+- **Better Error Handling**: Enhanced error reporting and connection management
+- **Streamlined Architecture**: Simplified codebase with direct API communication
+- **Production Ready**: Removed all debug logging for production deployment
+
+### Technical Details
+- Updated to gRPC ^4.1.0 and protobuf ^4.1.1 for latest features
+- Custom protobuf message classes for Google Cloud Speech-to-Text API
+- Bidirectional streaming with StreamController for audio data
+- Proper authentication with Google Cloud access tokens
+- Cross-platform audio capture with gRPC streaming backend
+- Cleaned up unused protobuf generation files and dependencies
+
+### Dependencies
+- grpc: ^4.1.0
+- protobuf: ^4.1.1
+- plugin_platform_interface: ^2.1.8 
+
+### Code Quality
+- Removed all debug logging statements
+- Cleaned up unused files and dependencies
+- Optimized for production deployment
+- Improved code maintainability
+
+## [1.0.1] - 2025-07-16 (Deprecated)
+
+### Major Improvement: Streaming Speech Recognition
+- **BREAKING CHANGE**: Replaced chunked REST API with real-time WebSocket streaming
+- Implemented Google Cloud Speech-to-Text Streaming API for continuous audio transcription
+- Added WebSocket connections for both Android (OkHttp) and iOS (URLSessionWebSocketTask)
+- Real-time interim results with immediate user feedback
+- Improved transcription quality and reduced latency for continuous speech
+
 ## [1.0.0] - 2025-07-12
 
 ### Added

@@ -28,14 +28,14 @@ class _MyAppState extends State<MyApp> {
   Future<void> _initializePlugin() async {
     try {
       // Replace with your actual Google Cloud access token
-      const String accessToken = 'YOUR_GOOGLE_CLOUD_ACCESS_TOKEN_HERE';
-      
+      const String accessToken = 'YOUR_ACCESS_TOKEN_HERE';
+
       final bool success = await FlutterGoogleStt.initialize(
         accessToken: accessToken,
         languageCode: 'en-US',
         sampleRateHertz: 16000,
       );
-      
+
       setState(() {
         _isInitialized = success;
         _status = success ? 'Initialized successfully' : 'Failed to initialize';
@@ -66,7 +66,10 @@ class _MyAppState extends State<MyApp> {
     }
 
     try {
-      final bool success = await FlutterGoogleStt.startListening((transcript, isFinal) {
+      final bool success = await FlutterGoogleStt.startListening((
+        transcript,
+        isFinal,
+      ) {
         setState(() {
           _transcript = transcript;
           _status = isFinal ? 'Final result' : 'Interim result';
@@ -180,7 +183,9 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton.icon(
                   onPressed: _isListening ? _stopListening : _startListening,
                   icon: Icon(_isListening ? Icons.stop : Icons.mic),
-                  label: Text(_isListening ? 'Stop Listening' : 'Start Listening'),
+                  label: Text(
+                    _isListening ? 'Stop Listening' : 'Start Listening',
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _isListening ? Colors.red : Colors.green,
                     foregroundColor: Colors.white,
@@ -189,7 +194,7 @@ class _MyAppState extends State<MyApp> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Note: Replace "YOUR_GOOGLE_CLOUD_ACCESS_TOKEN_HERE" in the code with your actual Google Cloud access token.',
+                  'Note: Replace "YOUR_ACCESS_TOKEN_HERE" in the code with your actual Google Cloud access token.',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],

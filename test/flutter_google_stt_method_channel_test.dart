@@ -9,31 +9,30 @@ void main() {
   const MethodChannel channel = MethodChannel('flutter_google_stt');
 
   setUp(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
-      channel,
-      (MethodCall methodCall) async {
-        switch (methodCall.method) {
-          case 'initialize':
-            return true;
-          case 'startListening':
-            return true;
-          case 'stopListening':
-            return true;
-          case 'isListening':
-            return false;
-          case 'hasMicrophonePermission':
-            return true;
-          case 'requestMicrophonePermission':
-            return true;
-          default:
-            throw PlatformException(code: 'UNIMPLEMENTED');
-        }
-      },
-    );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+          switch (methodCall.method) {
+            case 'initialize':
+              return true;
+            case 'startListening':
+              return true;
+            case 'stopListening':
+              return true;
+            case 'isListening':
+              return false;
+            case 'hasMicrophonePermission':
+              return true;
+            case 'requestMicrophonePermission':
+              return true;
+            default:
+              throw PlatformException(code: 'UNIMPLEMENTED');
+          }
+        });
   });
 
   tearDown(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
   });
 
   test('initialize', () async {

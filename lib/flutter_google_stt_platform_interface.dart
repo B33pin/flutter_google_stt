@@ -52,11 +52,15 @@ abstract class FlutterGoogleSttPlatform extends PlatformInterface {
 
   /// Check if microphone permission is granted
   Future<bool> hasMicrophonePermission() {
-    throw UnimplementedError('hasMicrophonePermission() has not been implemented.');
+    throw UnimplementedError(
+      'hasMicrophonePermission() has not been implemented.',
+    );
   }
 
   /// Request microphone permission
   Future<bool> requestMicrophonePermission() {
-    throw UnimplementedError('requestMicrophonePermission() has not been implemented.');
+    throw UnimplementedError(
+      'requestMicrophonePermission() has not been implemented.',
+    );
   }
 }

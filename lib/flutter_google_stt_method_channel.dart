@@ -36,7 +36,16 @@ class MethodChannelFlutterGoogleStt extends FlutterGoogleSttPlatform {
       case 'onTranscript':
         final String transcript = call.arguments['transcript'] as String;
         final bool isFinal = call.arguments['isFinal'] as bool;
+        // ignore: deprecated_member_use_from_same_package
         FlutterGoogleStt.onTranscriptReceived(transcript, isFinal);
+        break;
+      case 'onAudioData':
+        final List<int> audioData = List<int>.from(call.arguments);
+        FlutterGoogleStt.onAudioDataReceived(audioData);
+        break;
+      case 'onError':
+        final String error = call.arguments as String;
+        FlutterGoogleStt.onErrorReceived(error);
         break;
       default:
         throw PlatformException(
@@ -62,13 +71,17 @@ class MethodChannelFlutterGoogleStt extends FlutterGoogleSttPlatform {
 
   @override
   Future<bool> startListening() async {
-    final bool? result = await methodChannel.invokeMethod<bool>('startListening');
+    final bool? result = await methodChannel.invokeMethod<bool>(
+      'startListening',
+    );
     return result ?? false;
   }
 
   @override
   Future<bool> stopListening() async {
-    final bool? result = await methodChannel.invokeMethod<bool>('stopListening');
+    final bool? result = await methodChannel.invokeMethod<bool>(
+      'stopListening',
+    );
     return result ?? false;
   }
 
@@ -80,13 +93,17 @@ class MethodChannelFlutterGoogleStt extends FlutterGoogleSttPlatform {
 
   @override
   Future<bool> hasMicrophonePermission() async {
-    final bool? result = await methodChannel.invokeMethod<bool>('hasMicrophonePermission');
+    final bool? result = await methodChannel.invokeMethod<bool>(
+      'hasMicrophonePermission',
+    );
     return result ?? false;
   }
 
   @override
   Future<bool> requestMicrophonePermission() async {
-    final bool? result = await methodChannel.invokeMethod<bool>('requestMicrophonePermission');
+    final bool? result = await methodChannel.invokeMethod<bool>(
+      'requestMicrophonePermission',
+    );
     return result ?? false;
   }
 }
