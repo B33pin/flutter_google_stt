@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2025-07-18
+## [2.1.0] - 2025-07-18
+
+### iOS Critical Bug Fixes
+- **CRITICAL FIX**: Resolved iOS app crashes when starting speech recognition
+- **Audio Format Fix**: Fixed iOS audio format compatibility issues that caused crashes on iOS devices and simulator
+- **Swift Compilation Fix**: Fixed Swift compiler errors related to immutable value passing
+- **iOS Audio Engine**: Improved iOS audio engine setup with proper error handling and native format support
+- **Audio Resampling**: Added proper audio resampling logic for iOS to ensure 16kHz compatibility
+- **Device Compatibility**: Enhanced iOS device and simulator compatibility
+
+### Improvements
+- **Enhanced Error Handling**: Added comprehensive error handling for iOS audio session and engine setup
+- **Better Audio Processing**: Improved audio buffer processing with proper format conversion
+- **iOS Simulator Support**: Added proper iOS simulator detection and handling
+- **Cross-Platform Stability**: Improved overall plugin stability across iOS and Android platforms
+
+## [2.0.0] - 2025-07-18 [RETRACTED]
 
 ### Major Architecture Change: gRPC Streaming Implementation
 - **BREAKING CHANGE**: Replaced Rest API streaming with native gRPC streaming API
