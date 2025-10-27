@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:flutter_google_stt/flutter_google_stt.dart';
@@ -15,7 +16,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _transcript = 'No speech detected yet...';
+  String _finalTranscript = '';
+  String _interimTranscript = '';
   bool _isListening = false;
   bool _isInitialized = false;
   String _status = 'Not initialized';
@@ -23,18 +25,22 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _initializePlugin();
   }
 
   Future<void> _initializePlugin() async {
     try {
-      // Replace with your actual Google Cloud access token
-      const String accessToken = 'YOUR_ACCESS_TOKEN_HERE';
-
-      final bool success = await FlutterGoogleStt.initialize(
-        accessToken: accessToken,
-        languageCode: 'en-US',
-        sampleRateHertz: 16000,
+      // Load service account JSON from assets
+      final String serviceAccountJson = await rootBundle.loadString(
+        'assets/service_account.json',
       );
+
+      final bool success =
+          await FlutterGoogleStt.initializeWithServiceAccountString(
+            serviceAccountJsonString: serviceAccountJson,
+            languageCode: 'en-US',
+            sampleRateHertz: 16000,
+          );
 
       setState(() {
         _isInitialized = success;
@@ -53,10 +59,16 @@ class _MyAppState extends State<MyApp> {
       return;
     }
 
-    // Check and request microphone permission
     bool hasPermission = await FlutterGoogleStt.hasMicrophonePermission;
+
     if (!hasPermission) {
-      hasPermission = await FlutterGoogleStt.requestMicrophonePermission();
+      try {
+        hasPermission = await FlutterGoogleStt.requestMicrophonePermission()
+            .timeout(const Duration(seconds: 10), onTimeout: () => false);
+      } catch (e) {
+        hasPermission = false;
+      }
+
       if (!hasPermission) {
         setState(() {
           _status = 'Microphone permission denied';
@@ -70,9 +82,16 @@ class _MyAppState extends State<MyApp> {
         transcript,
         isFinal,
       ) {
+        print('transcript: $transcript, isFinal: $isFinal');
         setState(() {
-          _transcript = transcript;
-          _status = isFinal ? 'Final result' : 'Interim result';
+          if (isFinal) {
+            _finalTranscript += '$transcript ';
+            _interimTranscript = '';
+            _status = 'Listening...';
+          } else {
+            _interimTranscript = transcript;
+            _status = 'Listening...';
+          }
         });
       });
 
@@ -82,7 +101,7 @@ class _MyAppState extends State<MyApp> {
       });
     } catch (e) {
       setState(() {
-        _status = 'Error starting listening: $e';
+        _status = 'Error: $e';
       });
     }
   }
@@ -90,13 +109,15 @@ class _MyAppState extends State<MyApp> {
   Future<void> _stopListening() async {
     try {
       final bool success = await FlutterGoogleStt.stopListening();
+
       setState(() {
         _isListening = false;
-        _status = success ? 'Stopped listening' : 'Failed to stop listening';
+        _status = success ? 'Stopped' : 'Failed to stop';
+        _interimTranscript = '';
       });
     } catch (e) {
       setState(() {
-        _status = 'Error stopping listening: $e';
+        _status = 'Error: $e';
       });
     }
   }
@@ -157,9 +178,37 @@ class _MyAppState extends State<MyApp> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: SingleChildScrollView(
-                          child: Text(
-                            _transcript,
-                            style: const TextStyle(fontSize: 16),
+                          child: RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                              children: [
+                                // Final transcript in normal text
+                                TextSpan(
+                                  text: _finalTranscript,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                                // Interim transcript in gray italic
+                                if (_interimTranscript.isNotEmpty)
+                                  TextSpan(
+                                    text: _interimTranscript,
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                // Default text if nothing yet
+                                if (_finalTranscript.isEmpty &&
+                                    _interimTranscript.isEmpty)
+                                  const TextSpan(
+                                    text: 'No speech detected yet...',
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -169,15 +218,18 @@ class _MyAppState extends State<MyApp> {
               ),
               const SizedBox(height: 20),
               if (!_isInitialized)
-                ElevatedButton.icon(
-                  onPressed: _initializePlugin,
-                  icon: const Icon(Icons.settings),
-                  label: const Text('Initialize Plugin'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+                Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Initializing...',
+                      style: TextStyle(
+                        color: Colors.blue[700],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 )
               else ...[
                 ElevatedButton.icon(
@@ -194,7 +246,7 @@ class _MyAppState extends State<MyApp> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Note: Replace "YOUR_ACCESS_TOKEN_HERE" in the code with your actual Google Cloud access token.',
+                  'Place your service account JSON file in assets/service_account.json',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],

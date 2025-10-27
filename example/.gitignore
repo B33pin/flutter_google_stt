@@ -39,6 +39,9 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Service account credentials (DO NOT COMMIT)
+assets/service_account.json
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
