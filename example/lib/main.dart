@@ -21,6 +21,8 @@ class _MyAppState extends State<MyApp> {
   bool _isListening = false;
   bool _isInitialized = false;
   String _status = 'Not initialized';
+  double _soundLevel = 0.0;
+  List<double> _waveform = [];
 
   @override
   void initState() {
@@ -78,22 +80,49 @@ class _MyAppState extends State<MyApp> {
     }
 
     try {
-      final bool success = await FlutterGoogleStt.startListening((
-        transcript,
-        isFinal,
-      ) {
-        print('transcript: $transcript, isFinal: $isFinal');
-        setState(() {
-          if (isFinal) {
-            _finalTranscript += '$transcript ';
-            _interimTranscript = '';
-            _status = 'Listening...';
-          } else {
-            _interimTranscript = transcript;
-            _status = 'Listening...';
-          }
-        });
-      });
+      final bool success = await FlutterGoogleStt.startListening(
+        (transcript, isFinal) {
+          print('transcript: $transcript, isFinal: $isFinal');
+          setState(() {
+            if (isFinal) {
+              _finalTranscript += '$transcript ';
+              _interimTranscript = '';
+              _status = 'Listening...';
+            } else {
+              _interimTranscript = transcript;
+              _status = 'Listening...';
+            }
+          });
+        },
+        onSoundLevelChange: (double level) {
+          // Convert dB level to normalized value (0.0 to 1.0)
+          // Sound level ranges from -160 dB (silence) to 0 dB (max)
+          // More negative = quieter, closer to 0 = louder
+          // Adjusted range based on typical microphone input: -80 to -20 dB
+
+          // Clamp the dB value to our working range
+          // -80 dB = very quiet/background noise -> 0%
+          // -20 dB = loud speech -> 100%
+          double clampedDb = level.clamp(-80, -20);
+
+          // Map from [-80, -20] to [0, 100]
+          int normalizedValue = (((clampedDb + 80) / 60) * 100).round();
+
+          // Ensure bounds
+          normalizedValue = normalizedValue.clamp(0, 100);
+
+          print('level : $level dB, normalized: $normalizedValue%');
+
+          setState(() {
+            _soundLevel = normalizedValue / 100;
+            // Keep last 50 values for waveform visualization
+            _waveform.add(_soundLevel);
+            if (_waveform.length > 50) {
+              _waveform.removeAt(0);
+            }
+          });
+        },
+      );
 
       setState(() {
         _isListening = success;
@@ -114,6 +143,8 @@ class _MyAppState extends State<MyApp> {
         _isListening = false;
         _status = success ? 'Stopped' : 'Failed to stop';
         _interimTranscript = '';
+        _soundLevel = 0.0;
+        _waveform.clear();
       });
     } catch (e) {
       setState(() {
@@ -158,6 +189,67 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+              // Sound level visualization
+              if (_isListening)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Sound Level',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        // Sound level bar
+                        Container(
+                          height: 30,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(7),
+                            child: LinearProgressIndicator(
+                              value: _soundLevel,
+                              backgroundColor: Colors.grey[200],
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                _soundLevel > 0.7
+                                    ? Colors.red
+                                    : _soundLevel > 0.4
+                                    ? Colors.orange
+                                    : Colors.green,
+                              ),
+                              minHeight: 30,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${(_soundLevel * 100).toInt()}%',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Waveform visualization
+                        Container(
+                          height: 80,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: CustomPaint(
+                            painter: WaveformPainter(_waveform),
+                            size: const Size(double.infinity, 80),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               const SizedBox(height: 20),
               Card(
                 child: Padding(
@@ -260,5 +352,45 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+}
+
+/// Custom painter for waveform visualization
+class WaveformPainter extends CustomPainter {
+  final List<double> waveform;
+
+  WaveformPainter(this.waveform);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (waveform.isEmpty) return;
+
+    final paint = Paint()
+      ..color = Colors.blue
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    final width = size.width;
+    final height = size.height;
+    final step = width / (waveform.length - 1).clamp(1, double.infinity);
+
+    for (int i = 0; i < waveform.length; i++) {
+      final x = i * step;
+      final y = height - (waveform[i] * height);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant WaveformPainter oldDelegate) {
+    return true; // Repaint on every frame for smooth animation
   }
 }
