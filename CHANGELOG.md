@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-10-27
+
+### Added
+- **Sound Level Monitoring**: Real-time audio level feedback during speech recognition
+  - Added `onSoundLevelChange` callback to `startListening()` method
+  - iOS implementation using RMS calculation from AVAudioEngine float samples
+  - Android implementation using RMS calculation from 16-bit PCM audio data
+  - Sound level reported in decibels (dB), typically ranging from -160 (silence) to 0 (maximum)
+  - Example app includes waveform visualization and sound level indicator
+  - Backward compatible - the callback is optional
+- **Waveform Visualization**: Added custom painter example for audio waveform display
+- **Documentation**: Added SOUND_LEVEL_FEATURE.md and SOUND_LEVEL_QUICK_START.md guides
+
+### Improved
+- Enhanced example app with visual audio feedback
+- Better user experience with real-time sound level indicators
+
 ## [2.1.0] - 2025-07-18
 
 ### iOS Critical Bug Fixes

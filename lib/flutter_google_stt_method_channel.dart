@@ -43,6 +43,10 @@ class MethodChannelFlutterGoogleStt extends FlutterGoogleSttPlatform {
         final List<int> audioData = List<int>.from(call.arguments);
         FlutterGoogleStt.onAudioDataReceived(audioData);
         break;
+      case 'onSoundLevelChange':
+        final double level = (call.arguments as num).toDouble();
+        FlutterGoogleStt.onSoundLevelChanged(level);
+        break;
       case 'onError':
         final String error = call.arguments as String;
         FlutterGoogleStt.onErrorReceived(error);

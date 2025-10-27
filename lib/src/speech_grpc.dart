@@ -113,13 +113,15 @@ class StreamingRecognitionConfig extends GeneratedMessage {
           'config',
           subBuilder: RecognitionConfig.create,
         )
-        ..aOB(2, 'interimResults');
+        ..aOB(2, 'singleUtterance')
+        ..aOB(3, 'interimResults');
 
   StreamingRecognitionConfig._() : super();
 
   factory StreamingRecognitionConfig({
     RecognitionConfig? config,
     bool? interimResults,
+    bool? singleUtterance,
   }) {
     final result = create();
     if (config != null) {
@@ -127,6 +129,9 @@ class StreamingRecognitionConfig extends GeneratedMessage {
     }
     if (interimResults != null) {
       result.interimResults = interimResults;
+    }
+    if (singleUtterance != null) {
+      result.singleUtterance = singleUtterance;
     }
     return result;
   }
@@ -152,8 +157,11 @@ class StreamingRecognitionConfig extends GeneratedMessage {
   RecognitionConfig get config => $_getN(0);
   set config(RecognitionConfig v) => setField(1, v);
 
-  bool get interimResults => $_getBF(1);
-  set interimResults(bool v) => $_setBool(1, v);
+  bool get singleUtterance => $_getBF(1);
+  set singleUtterance(bool v) => $_setBool(1, v);
+
+  bool get interimResults => $_getBF(2);
+  set interimResults(bool v) => $_setBool(2, v);
 }
 
 /// Protobuf message for StreamingRecognizeRequest

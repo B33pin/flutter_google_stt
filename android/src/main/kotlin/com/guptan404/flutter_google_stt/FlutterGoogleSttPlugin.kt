@@ -42,7 +42,12 @@ class FlutterGoogleSttPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
   // Audio recording parameters
   private val channelConfig = AudioFormat.CHANNEL_IN_MONO
   private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-  private val bufferSize = AudioRecord.getMinBufferSize(16000, channelConfig, audioFormat)
+  // Calculate buffer size for ~100ms chunks at 16kHz (recommended by Google)
+  // 16000 samples/sec * 0.1 sec * 2 bytes/sample = 3200 bytes
+  // Use max of this and minimum buffer size for reliability
+  private val optimalBufferSize = 3200
+  private val minBufferSize = AudioRecord.getMinBufferSize(16000, channelConfig, audioFormat)
+  private val bufferSize = maxOf(optimalBufferSize, minBufferSize)
   
   // Permission request code
   private val MICROPHONE_PERMISSION_REQUEST_CODE = 1001
@@ -159,6 +164,24 @@ class FlutterGoogleSttPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, P
         val bytesRead = audioRecord!!.read(buffer, 0, buffer.size)
         if (bytesRead > 0) {
           Log.d("FlutterGoogleStt", "Read $bytesRead bytes of audio data")
+          
+          // Calculate sound level (RMS -> dB)
+          var sum = 0.0
+          for (i in 0 until bytesRead step 2) {
+            // Convert 16-bit PCM to float (-1.0 to 1.0)
+            val sample = ((buffer[i + 1].toInt() shl 8) or (buffer[i].toInt() and 0xFF)).toShort()
+            val normalized = sample / 32768.0
+            sum += normalized * normalized
+          }
+          val rms = Math.sqrt(sum / (bytesRead / 2))
+          // Convert to decibels (reference: 1.0 = 0 dB)
+          val db = 20 * Math.log10(Math.max(rms, 0.00001))
+          
+          // Send sound level to Dart
+          withContext(Dispatchers.Main) {
+            channel.invokeMethod("onSoundLevelChange", db)
+          }
+          
           // Send audio data to Dart side for streaming
           val audioData = buffer.copyOf(bytesRead)
           withContext(Dispatchers.Main) {

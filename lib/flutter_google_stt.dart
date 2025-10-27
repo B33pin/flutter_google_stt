@@ -1,13 +1,17 @@
-export 'flutter_google_stt_platform_interface.dart' show TranscriptionCallback;
+export 'flutter_google_stt_platform_interface.dart'
+    show TranscriptionCallback, SoundLevelCallback;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'flutter_google_stt_platform_interface.dart';
 import 'src/streaming_recognizer.dart';
+import 'src/token_manager.dart';
 
 class FlutterGoogleStt {
   static TranscriptionCallback? _onTranscript;
+  static SoundLevelCallback? _onSoundLevelChange;
   static StreamingRecognizer? _streamingRecognizer;
   static StreamSubscription? _streamSubscription;
   static bool _isListening = false;
@@ -16,11 +20,79 @@ class FlutterGoogleStt {
   static String? _accessToken;
   static String _languageCode = 'en-US';
   static int _sampleRateHertz = 16000;
+  static bool _useServiceAccount = false;
+
+  /// Initialize with service account JSON map (RECOMMENDED)
+  /// [serviceAccountJson] - The service account JSON as a Map
+  /// [languageCode] - Language code (e.g., 'en-US', 'es-ES')
+  /// [sampleRateHertz] - Audio sample rate (default: 16000)
+  static Future<bool> initializeWithServiceAccount({
+    required Map<String, dynamic> serviceAccountJson,
+    String languageCode = 'en-US',
+    int sampleRateHertz = 16000,
+  }) async {
+    print('🔧 FlutterGoogleStt - Initializing with service account');
+
+    try {
+      // Initialize token manager with service account
+      await TokenManager.initializeWithServiceAccount(serviceAccountJson);
+
+      // Store configuration
+      _languageCode = languageCode;
+      _sampleRateHertz = sampleRateHertz;
+      _useServiceAccount = true;
+
+      // Get initial access token
+      _accessToken = await TokenManager.getAccessToken();
+      print('🔧 FlutterGoogleStt - Access token obtained');
+
+      // Initialize platform for audio capture
+      final result = await FlutterGoogleSttPlatform.instance.initialize(
+        accessToken: _accessToken!,
+        languageCode: languageCode,
+        sampleRateHertz: sampleRateHertz,
+      );
+
+      print('🔧 FlutterGoogleStt - Platform initialized: $result');
+      return result;
+    } catch (e) {
+      print('❌ FlutterGoogleStt - Initialization failed: $e');
+      return false;
+    }
+  }
+
+  /// Initialize with service account JSON string
+  /// [serviceAccountJsonString] - The service account JSON as a String
+  /// [languageCode] - Language code (e.g., 'en-US', 'es-ES')
+  /// [sampleRateHertz] - Audio sample rate (default: 16000)
+  static Future<bool> initializeWithServiceAccountString({
+    required String serviceAccountJsonString,
+    String languageCode = 'en-US',
+    int sampleRateHertz = 16000,
+  }) async {
+    print('🔧 FlutterGoogleStt - Parsing service account JSON string');
+    try {
+      final Map<String, dynamic> serviceAccountJson = json.decode(
+        serviceAccountJsonString,
+      );
+      return await initializeWithServiceAccount(
+        serviceAccountJson: serviceAccountJson,
+        languageCode: languageCode,
+        sampleRateHertz: sampleRateHertz,
+      );
+    } catch (e) {
+      print('❌ FlutterGoogleStt - Failed to parse service account JSON: $e');
+      return false;
+    }
+  }
 
   /// Initialize the speech-to-text service with Google Cloud credentials
   /// [accessToken] - Google Cloud access token for authentication
   /// [languageCode] - Language code (e.g., 'en-US', 'es-ES')
   /// [sampleRateHertz] - Audio sample rate (default: 16000)
+  ///
+  /// @deprecated Use initializeWithServiceAccount instead for automatic token management
+  @Deprecated('Use initializeWithServiceAccount for better token management')
   static Future<bool> initialize({
     required String accessToken,
     String languageCode = 'en-US',
@@ -41,18 +113,31 @@ class FlutterGoogleStt {
 
   /// Start listening for speech input with streaming recognition
   /// [onTranscript] - Callback function that receives transcribed text and final status
-  static Future<bool> startListening(TranscriptionCallback onTranscript) async {
+  /// [onSoundLevelChange] - Optional callback function that receives sound level updates (in dB, typically -160 to 0)
+  static Future<bool> startListening(
+    TranscriptionCallback onTranscript, {
+    SoundLevelCallback? onSoundLevelChange,
+  }) async {
     if (_isListening) {
       return true;
     }
 
     _onTranscript = onTranscript;
+    _onSoundLevelChange = onSoundLevelChange;
 
     if (_accessToken == null) {
-      throw Exception('Must call initialize() before startListening()');
+      throw Exception(
+        'Must call initialize() or initializeWithServiceAccount() before startListening()',
+      );
     }
 
     try {
+      // Refresh token if using service account (in case it expired)
+      if (_useServiceAccount) {
+        print('🔄 FlutterGoogleStt - Refreshing access token');
+        _accessToken = await TokenManager.getAccessToken();
+      }
+
       // Initialize streaming recognizer
       _streamingRecognizer = StreamingRecognizer();
 
@@ -151,6 +236,11 @@ class FlutterGoogleStt {
   /// Handle errors received from native platforms
   static void onErrorReceived(String error) {
     // Could also call onTranscript with error information if needed
+  }
+
+  /// Handle sound level changes received from native platforms
+  static void onSoundLevelChanged(double level) {
+    _onSoundLevelChange?.call(level);
   }
 
   /// Check if microphone permission is granted

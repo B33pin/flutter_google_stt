@@ -5,6 +5,9 @@ import 'flutter_google_stt_method_channel.dart';
 /// Callback function for receiving transcription results
 typedef TranscriptionCallback = void Function(String transcript, bool isFinal);
 
+/// Callback function for receiving sound level changes
+typedef SoundLevelCallback = void Function(double level);
+
 abstract class FlutterGoogleSttPlatform extends PlatformInterface {
   /// Constructs a FlutterGoogleSttPlatform.
   FlutterGoogleSttPlatform() : super(token: _token);

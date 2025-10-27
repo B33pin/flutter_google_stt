@@ -93,18 +93,22 @@ class StreamingRecognizer {
   /// Send initial configuration message
   Future<void> _sendInitialConfig() async {
     // Create recognition config
+    // Note: Not specifying a model uses the default model which supports all features
     final recognitionConfig = RecognitionConfig(
       encoding: AudioEncoding.LINEAR16,
       sampleRateHertz: _sampleRateHertz!,
       languageCode: _languageCode!,
       enableAutomaticPunctuation: true,
-      model: 'latest_long',
     );
 
     // Create streaming config
     final streamingConfig = StreamingRecognitionConfig(
       config: recognitionConfig,
+      // Enable interim results for smooth, real-time transcription display
       interimResults: true,
+      // Explicitly set singleUtterance to false for continuous streaming
+      // (some models don't support single_utterance=true)
+      singleUtterance: false,
     );
 
     // Create initial request with streaming config
@@ -128,10 +132,10 @@ class StreamingRecognizer {
         _requestController = null;
       },
       onDone: () {
-        _isStreaming = false;
-        _requestController?.close();
-        _requestController = null;
+        // Don't close the stream here - let it continue
+        // The stream closing is normal for interim results
       },
+      cancelOnError: false, // Important: Don't cancel on errors
     );
   }
 
@@ -146,6 +150,7 @@ class StreamingRecognizer {
 
       // Process results
       final results = response.results;
+
       if (results.isEmpty) {
         return;
       }
@@ -203,7 +208,6 @@ class StreamingRecognizer {
     try {
       // Create audio request
       final audioRequest = StreamingRecognizeRequest(audioContent: audioData);
-
       _requestController!.add(audioRequest);
     } catch (e) {
       _emitError('Error sending audio data: $e');

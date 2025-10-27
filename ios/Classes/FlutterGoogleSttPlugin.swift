@@ -129,9 +129,11 @@ public class FlutterGoogleSttPlugin: NSObject, FlutterPlugin {
         print("FlutterGoogleSttPlugin: Using native audio format for recording")
         
         // Install tap on input node to capture audio for streaming
+        // Using 1600 buffer size for ~100ms chunks at 16kHz (recommended by Google)
+        // This provides a good balance between latency and efficiency
         print("FlutterGoogleSttPlugin: Installing audio tap")
         do {
-            inputNode.installTap(onBus: 0, bufferSize: 1024, format: nativeFormat) { [weak self] (buffer, time) in
+            inputNode.installTap(onBus: 0, bufferSize: 1600, format: nativeFormat) { [weak self] (buffer, time) in
                 self?.processAudioBuffer(buffer: buffer)
             }
         } catch {
@@ -160,6 +162,22 @@ public class FlutterGoogleSttPlugin: NSObject, FlutterPlugin {
         let frameCount = Int(buffer.frameLength)
         let sampleRate = buffer.format.sampleRate
         print("FlutterGoogleSttPlugin: Processing \(frameCount) frames at \(sampleRate) Hz")
+        
+        // Calculate sound level (RMS -> dB)
+        var sum: Float = 0
+        for i in 0..<frameCount {
+            let sample = channelData[i]
+            sum += sample * sample
+        }
+        let rms = sqrt(sum / Float(frameCount))
+        // Convert to decibels (reference: 1.0 = 0 dB)
+        // Clamp to avoid log(0) and provide reasonable range
+        let db = 20 * log10(max(rms, 0.00001))
+        
+        // Send sound level to Dart
+        DispatchQueue.main.async { [weak self] in
+            self?.channel?.invokeMethod("onSoundLevelChange", arguments: db)
+        }
         
         // Convert and resample if needed
         var audioData = Data()

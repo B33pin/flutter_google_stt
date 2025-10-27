@@ -22,6 +22,8 @@ dependencies:
   plugin_platform_interface: ^2.1.8
   grpc: ^4.1.0
   protobuf: ^4.1.1
+  http: ^1.1.0
+  googleapis_auth: ^1.4.1
 
 dev_dependencies:
   flutter_test:

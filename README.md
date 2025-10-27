@@ -11,7 +11,8 @@ A Flutter plugin for real-time speech-to-text using Google Cloud Speech-to-Text 
 - 🧠 **Enhanced AI Models**: Uses Google's `latest_long` model with improved accuracy
 - 🔒 **Secure Authentication**: Google Cloud access token-based authentication
 - 📝 **Automatic Punctuation**: Enhanced readability with smart punctuation
-- 🎯 **Production Ready**: Clean, optimized codebase for production deployment
+- � **Sound Level Monitoring**: Real-time audio level feedback and waveform visualization
+- �🎯 **Production Ready**: Clean, optimized codebase for production deployment
 
 ## 🆕 v2.0.0 - gRPC Architecture
 
@@ -52,13 +53,21 @@ await FlutterGoogleStt.initialize(
 );
 
 // Start listening
-await FlutterGoogleStt.startListening((transcript, isFinal) {
-  print('Transcript: $transcript (Final: $isFinal)');
-});
+await FlutterGoogleStt.startListening(
+  (transcript, isFinal) {
+    print('Transcript: $transcript (Final: $isFinal)');
+  },
+  onSoundLevelChange: (double level) {
+    // Optional: Monitor audio level for visualization
+    print('Sound level: $level dB');
+  },
+);
 
 // Stop listening
 await FlutterGoogleStt.stopListening();
 ```
+
+For more details on the sound level feature, see [SOUND_LEVEL_QUICK_START.md](SOUND_LEVEL_QUICK_START.md).
 
 ## Platform Setup
 
