@@ -50,6 +50,7 @@ import 'package:flutter_google_stt/flutter_google_stt.dart';
 await FlutterGoogleStt.initialize(
   accessToken: 'your-google-cloud-access-token',
   languageCode: 'en-US',
+  model: 'latest_long', // Optional: specify a model
 );
 
 // Start listening
@@ -68,6 +69,27 @@ await FlutterGoogleStt.stopListening();
 ```
 
 For more details on the sound level feature, see [SOUND_LEVEL_QUICK_START.md](SOUND_LEVEL_QUICK_START.md).
+
+## Model Selection
+
+You can specify which Google Cloud Speech-to-Text model to use for optimal accuracy based on your use case:
+
+```dart
+await FlutterGoogleStt.initializeWithServiceAccountString(
+  serviceAccountJsonString: serviceAccountJson,
+  languageCode: 'en-US',
+  model: 'latest_long', // Choose the best model for your needs
+);
+```
+
+### Available Models:
+- **`latest_long`** - Best for long-form content and dictation (recommended)
+- **`latest_short`** - Optimized for short audio clips and voice commands
+- **`command_and_search`** - Very low latency for voice commands and search
+- **`phone_call`** - Optimized for telephony audio
+- **`video`** - Best for video transcription with background noise
+
+For detailed information about models and choosing the right one, see [MODEL_GUIDE.md](MODEL_GUIDE.md).
 
 ## Platform Setup
 

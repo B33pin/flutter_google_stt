@@ -20,16 +20,19 @@ class FlutterGoogleStt {
   static String? _accessToken;
   static String _languageCode = 'en-US';
   static int _sampleRateHertz = 16000;
+  static String? _model;
   static bool _useServiceAccount = false;
 
   /// Initialize with service account JSON map (RECOMMENDED)
   /// [serviceAccountJson] - The service account JSON as a Map
   /// [languageCode] - Language code (e.g., 'en-US', 'es-ES')
   /// [sampleRateHertz] - Audio sample rate (default: 16000)
+  /// [model] - Recognition model (e.g., 'latest_long', 'latest_short', 'command_and_search', 'phone_call', 'video', 'default')
   static Future<bool> initializeWithServiceAccount({
     required Map<String, dynamic> serviceAccountJson,
     String languageCode = 'en-US',
     int sampleRateHertz = 16000,
+    String? model,
   }) async {
     print('🔧 FlutterGoogleStt - Initializing with service account');
 
@@ -40,6 +43,7 @@ class FlutterGoogleStt {
       // Store configuration
       _languageCode = languageCode;
       _sampleRateHertz = sampleRateHertz;
+      _model = model;
       _useServiceAccount = true;
 
       // Get initial access token
@@ -65,10 +69,12 @@ class FlutterGoogleStt {
   /// [serviceAccountJsonString] - The service account JSON as a String
   /// [languageCode] - Language code (e.g., 'en-US', 'es-ES')
   /// [sampleRateHertz] - Audio sample rate (default: 16000)
+  /// [model] - Recognition model (e.g., 'latest_long', 'latest_short', 'command_and_search', 'phone_call', 'video', 'default')
   static Future<bool> initializeWithServiceAccountString({
     required String serviceAccountJsonString,
     String languageCode = 'en-US',
     int sampleRateHertz = 16000,
+    String? model,
   }) async {
     print('🔧 FlutterGoogleStt - Parsing service account JSON string');
     try {
@@ -79,6 +85,7 @@ class FlutterGoogleStt {
         serviceAccountJson: serviceAccountJson,
         languageCode: languageCode,
         sampleRateHertz: sampleRateHertz,
+        model: model,
       );
     } catch (e) {
       print('❌ FlutterGoogleStt - Failed to parse service account JSON: $e');
@@ -90,6 +97,7 @@ class FlutterGoogleStt {
   /// [accessToken] - Google Cloud access token for authentication
   /// [languageCode] - Language code (e.g., 'en-US', 'es-ES')
   /// [sampleRateHertz] - Audio sample rate (default: 16000)
+  /// [model] - Recognition model (e.g., 'latest_long', 'latest_short', 'command_and_search', 'phone_call', 'video', 'default')
   ///
   /// @deprecated Use initializeWithServiceAccount instead for automatic token management
   @Deprecated('Use initializeWithServiceAccount for better token management')
@@ -97,11 +105,13 @@ class FlutterGoogleStt {
     required String accessToken,
     String languageCode = 'en-US',
     int sampleRateHertz = 16000,
+    String? model,
   }) async {
     // Store configuration for streaming
     _accessToken = accessToken;
     _languageCode = languageCode;
     _sampleRateHertz = sampleRateHertz;
+    _model = model;
 
     // Initialize platform for audio capture only
     return FlutterGoogleSttPlatform.instance.initialize(
@@ -146,6 +156,7 @@ class FlutterGoogleStt {
         accessToken: _accessToken!,
         languageCode: _languageCode,
         sampleRateHertz: _sampleRateHertz,
+        model: _model,
       );
 
       // Listen to transcript stream

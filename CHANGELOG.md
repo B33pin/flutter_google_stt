@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-10-27
+
+### Added
+- **Model Selection**: Added ability to specify Google Cloud Speech-to-Text recognition model
+  - Added optional `model` parameter to all initialization methods
+  - Supports models: 'latest_long', 'latest_short', 'command_and_search', 'phone_call', 'video'
+  - Allows optimization for different use cases (dictation, commands, phone calls, video, etc.)
+  - Added comprehensive MODEL_GUIDE.md documentation
+  - Updated example app with model selection comments
+
+### Improved
+- Enhanced flexibility for different transcription scenarios
+- Better accuracy control based on use case
+- Comprehensive documentation for model selection
+
 ## [2.2.0] - 2025-10-27
 
 ### Added

@@ -10,6 +10,7 @@ class StreamingRecognizer {
   String? _accessToken;
   String? _languageCode;
   int? _sampleRateHertz;
+  String? _model;
 
   ClientChannel? _channel;
   ResponseStream<StreamingRecognizeResponse>? _responseStream;
@@ -29,6 +30,7 @@ class StreamingRecognizer {
     required String accessToken,
     required String languageCode,
     required int sampleRateHertz,
+    String? model,
   }) async {
     if (_isStreaming) {
       return;
@@ -42,6 +44,7 @@ class StreamingRecognizer {
       _accessToken = accessToken;
       _languageCode = languageCode;
       _sampleRateHertz = sampleRateHertz;
+      _model = model;
 
       // Create gRPC channel to Google Cloud Speech-to-Text
       _channel = ClientChannel(
@@ -93,12 +96,12 @@ class StreamingRecognizer {
   /// Send initial configuration message
   Future<void> _sendInitialConfig() async {
     // Create recognition config
-    // Note: Not specifying a model uses the default model which supports all features
     final recognitionConfig = RecognitionConfig(
       encoding: AudioEncoding.LINEAR16,
       sampleRateHertz: _sampleRateHertz!,
       languageCode: _languageCode!,
       enableAutomaticPunctuation: true,
+      model: _model, // Use specified model or default if null
     );
 
     // Create streaming config

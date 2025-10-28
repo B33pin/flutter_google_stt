@@ -37,12 +37,16 @@ class _MyAppState extends State<MyApp> {
         'assets/service_account.json',
       );
 
-      final bool success =
-          await FlutterGoogleStt.initializeWithServiceAccountString(
-            serviceAccountJsonString: serviceAccountJson,
-            languageCode: 'en-US',
-            sampleRateHertz: 16000,
-          );
+      final bool
+      success = await FlutterGoogleStt.initializeWithServiceAccountString(
+        serviceAccountJsonString: serviceAccountJson,
+        languageCode: 'en-US',
+        sampleRateHertz: 16000,
+        // Optional: Specify a model for better accuracy
+        // Available models: 'latest_long', 'latest_short', 'command_and_search',
+        // 'phone_call', 'video', 'default'
+        // model: 'latest_long', // Uncomment to use a specific model
+      );
 
       setState(() {
         _isInitialized = success;
