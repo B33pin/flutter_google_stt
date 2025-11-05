@@ -4,17 +4,6 @@
 <dict>
 	<key>NSPrivacyTrackingDomains</key>
 	<array/>
-	<key>NSPrivacyAccessedAPITypes</key>
-	<array>
-		<dict>
-			<key>NSPrivacyAccessedAPIType</key>
-			<string>NSPrivacyAccessedAPICategoryMicrophone</string>
-			<key>NSPrivacyAccessedAPITypeReasons</key>
-			<array>
-				<string>NSPrivacyAccessedAPICategoryMicrophoneReasonAppFunctionality</string>
-			</array>
-		</dict>
-	</array>
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
 		<dict>
